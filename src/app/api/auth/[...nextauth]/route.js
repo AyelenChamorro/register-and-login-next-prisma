@@ -16,31 +16,35 @@ const authOptions = {
         },
       },
       async authorize(credentials, req) {
-        console.log("credentials", credentials);
 
-        // Consulta para encontrar el usuario
+
+
         const userFound = await db.user.findUnique({
           where: {
             email: credentials.email,
           },
         });
 
-        if (!userFound) return new Error("User not found");
-        console.log("userFound", userFound);
+        if (!userFound) {
+          throw new Error("User not found");
+        }
+
 
         const matchPassword = await bcrypt.compare(
           credentials.password,
           userFound.password
         );
 
-        if (!matchPassword) return new Error("Password incorrect");
+        if (!matchPassword) {
+          throw new Error("Password incorrect");
+        }
 
         return {
           id: userFound.id,
           name: userFound.username,
           email: userFound.email,
         };
-      },
+      }
     }),
   ],
   pages: {
